@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>Applicants for "{{ job.title }}"</h2>
+
+{% for app in applications %}
+<div style="border:1px solid #ccc; padding:15px; margin-bottom:10px;">
+    <p><strong>Candidate:</strong> {{ app.candidate.email }}</p>
+    <p><strong>Status:</strong> {{ app.status }}</p>
+    <p><strong>Applied:</strong> {{ app.applied_at|date:"d M Y" }}</p>
+
+    {% if app.status == "APPLIED" %}
+        <a href="/recruiter/application/{{ app.id }}/SHORTLISTED/">
+            <button style="background:green;color:white;">Shortlist</button>
+        </a>
+
+        <a href="/recruiter/application/{{ app.id }}/REJECTED/">
+            <button style="background:red;color:white;">Reject</button>
+        </a>
+    {% endif %}
+</div>
+{% empty %}
+<p>No applications yet.</p>
+{% endfor %}
+
+<a href="/recruiter/dashboard/">⬅ Back</a>
+
+{% endblock %}

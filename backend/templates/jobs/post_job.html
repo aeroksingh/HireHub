@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% block title %}Post New Job - HireHub{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="card-title mb-0">
+                        <i class="fas fa-plus-circle me-2"></i>Post a New Job
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+
+                        <div class="mb-3">
+                            <label for="title" class="form-label">
+                                <i class="fas fa-briefcase me-1"></i>Job Title
+                            </label>
+                            <input type="text" class="form-control" id="title" name="title"
+                                    placeholder="e.g., Senior Python Developer" required>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="location" class="form-label">
+                                        <i class="fas fa-map-marker-alt me-1"></i>Location
+                                    </label>
+                                    <input type="text" class="form-control" id="location" name="location"
+                                            placeholder="e.g., New York, NY" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="job_type" class="form-label">
+                                        <i class="fas fa-clock me-1"></i>Job Type
+                                    </label>
+                                    <select class="form-select" id="job_type" name="job_type" required>
+                                        <option value="">Select job type</option>
+                                        <option value="Full-time">Full-time</option>
+                                        <option value="Part-time">Part-time</option>
+                                        <option value="Internship">Internship</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="description" class="form-label">
+                                <i class="fas fa-file-alt me-1"></i>Job Description
+                            </label>
+                            <textarea class="form-control" id="description" name="description"
+                                    rows="6" placeholder="Describe the job requirements, responsibilities, and benefits..."
+                                    required></textarea>
+                            <div class="form-text">
+                                Provide detailed information about the role, requirements, and what candidates can expect.
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{% url 'recruiter:dashboard' %}" class="btn btn-outline-secondary me-md-2">
+                                <i class="fas fa-arrow-left me-1"></i>Back to Dashboard
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-paper-plane me-2"></i>Post Job
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

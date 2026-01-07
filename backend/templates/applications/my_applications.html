@@ -1,0 +1,263 @@
+{% extends "base.html" %}
+{% block title %}My Applications - HireHub{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="mb-1">
+                        <i class="fas fa-paper-plane me-2"></i>My Job Applications
+                    </h1>
+                    <p class="text-muted mb-0">Track and manage your job applications</p>
+                </div>
+                <div class="text-end">
+                    <small class="text-muted">Total Applications: {{ applications|length }}</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if applications %}
+    <!-- Application Tabs -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <ul class="nav nav-tabs" id="applicationTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="all-tab" data-bs-toggle="tab" data-bs-target="#all-applications"
+                            type="button" role="tab" aria-controls="all-applications" aria-selected="true">
+                        <i class="fas fa-list me-1"></i>All Applications ({{ applications|length }})
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="applied-tab" data-bs-toggle="tab" data-bs-target="#applied-applications"
+                            type="button" role="tab" aria-controls="applied-applications" aria-selected="false">
+                        <i class="fas fa-clock me-1"></i>Applied
+                        ({{ applied_applications|length }})
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="shortlisted-tab" data-bs-toggle="tab" data-bs-target="#shortlisted-applications"
+                            type="button" role="tab" aria-controls="shortlisted-applications" aria-selected="false">
+                        <i class="fas fa-check-circle me-1"></i>Shortlisted
+                        ({{ shortlisted_applications|length }})
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="rejected-tab" data-bs-toggle="tab" data-bs-target="#rejected-applications"
+                            type="button" role="tab" aria-controls="rejected-applications" aria-selected="false">
+                        <i class="fas fa-times-circle me-1"></i>Rejected
+                        ({{ rejected_applications|length }})
+                    </button>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Tab Content -->
+    <div class="tab-content" id="applicationTabsContent">
+        <!-- All Applications Tab -->
+        <div class="tab-pane fade show active" id="all-applications" role="tabpanel" aria-labelledby="all-tab">
+            <div class="row">
+                {% for application in applications %}
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-header bg-light">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <h6 class="card-title mb-0">{{ application.job.title }}</h6>
+                                <span class="badge fs-6
+                                    {% if application.status == 'APPLIED' %}bg-warning text-dark
+                                    {% elif application.status == 'SHORTLISTED' %}bg-success
+                                    {% else %}bg-danger{% endif %}">
+                                    {% if application.status == 'APPLIED' %}
+                                        <i class="fas fa-clock me-1"></i>
+                                    {% elif application.status == 'SHORTLISTED' %}
+                                        <i class="fas fa-check me-1"></i>
+                                    {% else %}
+                                        <i class="fas fa-times me-1"></i>
+                                    {% endif %}
+                                    {{ application.get_status_display }}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <p class="card-text text-muted small mb-2">
+                                    <strong><i class="fas fa-map-marker-alt me-1"></i>Location:</strong> {{ application.job.location }}
+                                </p>
+                                <p class="card-text text-muted small mb-2">
+                                    <strong><i class="fas fa-clock me-1"></i>Type:</strong> {{ application.job.job_type }}
+                                </p>
+                                <p class="card-text text-muted small mb-2">
+                                    <strong><i class="fas fa-calendar me-1"></i>Applied:</strong> {{ application.applied_at|date:"M d, Y" }}
+                                </p>
+                                {% if application.resume %}
+                                <p class="card-text text-muted small mb-0">
+                                    <i class="fas fa-file me-1"></i><strong>Resume:</strong> Uploaded
+                                </p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="card-footer bg-transparent">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">App #{{ application.id }}</small>
+                                <a href="{% url 'applications:job_applicants' application.job.id %}"
+                                    class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-eye me-1"></i>View Details
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Applied Applications Tab -->
+        <div class="tab-pane fade" id="applied-applications" role="tabpanel" aria-labelledby="applied-tab">
+            <div class="row">
+                {% for application in applied_applications %}
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-header bg-warning text-dark">
+                            <h6 class="card-title mb-0">{{ application.job.title }}</h6>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text text-muted small mb-2">
+                                <strong><i class="fas fa-map-marker-alt me-1"></i>Location:</strong> {{ application.job.location }}
+                            </p>
+                            <p class="card-text text-muted small mb-2">
+                                <strong><i class="fas fa-clock me-1"></i>Type:</strong> {{ application.job.job_type }}
+                            </p>
+                            <p class="card-text text-muted small mb-0">
+                                <strong><i class="fas fa-calendar me-1"></i>Applied:</strong> {{ application.applied_at|date:"M d, Y" }}
+                            </p>
+                        </div>
+                        <div class="card-footer bg-transparent">
+                            <small class="text-muted">Waiting for response</small>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12">
+                    <div class="text-center py-5">
+                        <i class="fas fa-clock fa-3x text-warning mb-3"></i>
+                        <h5 class="text-muted">No Applied Applications</h5>
+                        <p class="text-muted">Applications awaiting response will appear here.</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Shortlisted Applications Tab -->
+        <div class="tab-pane fade" id="shortlisted-applications" role="tabpanel" aria-labelledby="shortlisted-tab">
+            <div class="row">
+                {% for application in shortlisted_applications %}
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100 border-0 shadow-sm border-success">
+                        <div class="card-header bg-success text-white">
+                            <h6 class="card-title mb-0">{{ application.job.title }}</h6>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text text-muted small mb-2">
+                                <strong><i class="fas fa-map-marker-alt me-1"></i>Location:</strong> {{ application.job.location }}
+                            </p>
+                            <p class="card-text text-muted small mb-2">
+                                <strong><i class="fas fa-clock me-1"></i>Type:</strong> {{ application.job.job_type }}
+                            </p>
+                            <p class="card-text text-muted small mb-0">
+                                <strong><i class="fas fa-calendar me-1"></i>Applied:</strong> {{ application.applied_at|date:"M d, Y" }}
+                            </p>
+                        </div>
+                        <div class="card-footer bg-transparent">
+                            <small class="text-success"><i class="fas fa-check-circle me-1"></i>Congratulations!</small>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12">
+                    <div class="text-center py-5">
+                        <i class="fas fa-trophy fa-3x text-success mb-3"></i>
+                        <h5 class="text-muted">No Shortlisted Applications</h5>
+                        <p class="text-muted">Shortlisted applications will appear here.</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Rejected Applications Tab -->
+        <div class="tab-pane fade" id="rejected-applications" role="tabpanel" aria-labelledby="rejected-tab">
+            <div class="row">
+                {% for application in rejected_applications %}
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100 border-0 shadow-sm border-danger">
+                        <div class="card-header bg-danger text-white">
+                            <h6 class="card-title mb-0">{{ application.job.title }}</h6>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text text-muted small mb-2">
+                                <strong><i class="fas fa-map-marker-alt me-1"></i>Location:</strong> {{ application.job.location }}
+                            </p>
+                            <p class="card-text text-muted small mb-2">
+                                <strong><i class="fas fa-clock me-1"></i>Type:</strong> {{ application.job.job_type }}
+                            </p>
+                            <p class="card-text text-muted small mb-0">
+                                <strong><i class="fas fa-calendar me-1"></i>Applied:</strong> {{ application.applied_at|date:"M d, Y" }}
+                            </p>
+                        </div>
+                        <div class="card-footer bg-transparent">
+                            <small class="text-danger"><i class="fas fa-times-circle me-1"></i>Application not selected</small>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12">
+                    <div class="text-center py-5">
+                        <i class="fas fa-times-circle fa-3x text-danger mb-3"></i>
+                        <h5 class="text-muted">No Rejected Applications</h5>
+                        <p class="text-muted">Rejected applications will appear here.</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    {% else %}
+    <!-- No Applications State -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center py-5">
+                    <i class="fas fa-inbox fa-4x text-muted mb-3"></i>
+                    <h4 class="text-muted">No Applications Yet</h4>
+                    <p class="text-muted mb-4">You haven't applied to any jobs yet. Start exploring opportunities!</p>
+                    <a href="{% url 'jobs:job-list' %}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-search me-2"></i>Browse Available Jobs
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Custom JavaScript for enhanced UX -->
+<script>
+    // Add loading state to links
+    document.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', function() {
+            if (this.href && !this.href.includes('#')) {
+                this.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Loading...';
+            }
+        });
+    });
+</script>
+{% endblock %}

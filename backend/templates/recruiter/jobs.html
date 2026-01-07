@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>My Jobs</h1>
+
+    <ul class="list-group">
+        {% for job in jobs %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+
+            <!-- Job Info -->
+            <div>
+                <h5>{{ job.title }}</h5>
+                <p class="mb-1">
+                    {{ job.description|truncatechars:100 }}
+                </p>
+                <small class="text-muted">
+                    {{ job.location }} • {{ job.job_type }}
+                </small>
+            </div>
+
+            <!-- Actions -->
+            <div class="d-flex gap-2">
+
+                <!-- View Applicants -->
+                <a href="{% url 'recruiter:job_applicants' job.id %}"
+                    class="btn btn-sm btn-primary">
+                    View Applicants
+                </a>
+
+                <!-- Delete Job -->
+                <form method="post"
+                    action="{% url 'jobs:delete_job' job.id %}"
+                    onsubmit="return confirm('Are you sure you want to delete this job?');">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-danger">
+                        Delete
+                    </button>
+                </form>
+
+            </div>
+        </li>
+        {% empty %}
+        <li class="list-group-item text-center text-muted">
+            You haven’t posted any jobs yet.
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

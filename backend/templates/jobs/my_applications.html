@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>My Applications</h2>
+
+{% for app in applications %}
+<div style="
+    border:1px solid #ccc;
+    border-radius:6px;
+    padding:15px;
+    margin-bottom:15px;
+    background:#f9f9f9;
+">
+    <h3>{{ app.job.title }}</h3>
+    <p><strong>Location:</strong> {{ app.job.location }}</p>
+    <p><strong>Type:</strong> {{ app.job.job_type }}</p>
+    <p><strong>Status:</strong> {{ app.status }}</p>
+    <p><strong>Applied on:</strong> {{ app.applied_at|date:"d M Y" }}</p>
+</div>
+{% empty %}
+<p>You have not applied to any jobs yet.</p>
+{% endfor %}
+
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>Applicants for {{ job.title }}</h1>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Candidate Name</th>
+                <th>Email</th>
+                <th>Resume</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for application in applications %}
+            <tr>
+                <td>{{ application.candidate.get_full_name|default:application.candidate.username }}</td>
+                <td>{{ application.candidate.email }}</td>
+                <td>
+                    {% if application.resume %}
+                        <a href="{{ application.resume.url }}" target="_blank" class="btn btn-sm btn-info">View Resume</a>
+                        <a href="{{ application.resume.url }}" download class="btn btn-sm btn-secondary">Download</a>
+                    {% else %}
+                        No resume uploaded
+                    {% endif %}
+                </td>
+                <td>{{ application.get_status_display }}</td>
+                <td>
+                    {% if application.status == 'APPLIED' %}
+                        <a href="{% url 'recruiter:update_application_status' application.id 'SHORTLISTED' %}" class="btn btn-sm btn-success">Shortlist</a>
+                        <a href="{% url 'recruiter:update_application_status' application.id 'REJECTED' %}" class="btn btn-sm btn-danger">Reject</a>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a href="{% url 'recruiter:dashboard' %}" class="btn btn-secondary">Back to Dashboard</a>
+</div>
+{% endblock %}

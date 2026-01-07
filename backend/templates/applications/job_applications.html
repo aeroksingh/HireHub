@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+{% block title %}Applicants for {{ job.title }} - HireHub{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="mb-1">
+                        <i class="fas fa-users me-2"></i>Applicants for "{{ job.title }}"
+                    </h1>
+                    <p class="text-muted mb-0">{{ job.location }} • {{ job.job_type }}</p>
+                </div>
+                <a href="{% url 'recruiter:dashboard' %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-1"></i>Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Applications -->
+    <div class="row">
+        <div class="col-12">
+
+            {% for application in applications %}
+            <div class="card mb-3 border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="row align-items-center">
+
+                        <!-- Candidate Info -->
+                        <div class="col-md-5">
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-circle bg-primary text-white me-3">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-1">
+                                        {% if application.candidate.get_full_name %}
+                                            {{ application.candidate.get_full_name }}
+                                        {% else %}
+                                            {{ application.candidate.username }}
+                                        {% endif %}
+                                    </h5>
+                                    <p class="text-muted mb-0">
+                                        {{ application.candidate.email }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Status -->
+                        <div class="col-md-3 text-center">
+                            <span class="badge fs-6
+                                {% if application.status == 'APPLIED' %}bg-warning text-dark
+                                {% elif application.status == 'IN_REVIEW' %}bg-info
+                                {% elif application.status == 'SHORTLISTED' %}bg-primary
+                                {% elif application.status == 'SELECTED' %}bg-success
+                                {% else %}bg-danger{% endif %}">
+                                {{ application.get_status_display }}
+                            </span>
+                            <div class="text-muted small mt-1">
+                                Applied {{ application.applied_at|date:"M d, Y" }}
+                            </div>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="col-md-4 text-end">
+
+                            {% if application.resume %}
+                            <a href="{{ application.resume.url }}" target="_blank"
+                               class="btn btn-outline-primary btn-sm me-1">
+                                <i class="fas fa-eye"></i> Resume
+                            </a>
+                            {% endif %}
+
+                            <!-- STATUS UPDATE FORM -->
+                            <form method="post"
+                                  action="{% url 'applications:update_application_status' application.id %}"
+                                  class="d-inline">
+                                {% csrf_token %}
+                                <select name="status" class="form-select form-select-sm d-inline w-auto me-2">
+                                    {% for key, value in application.STATUS_CHOICES %}
+                                        <option value="{{ key }}"
+                                            {% if application.status == key %}selected{% endif %}>
+                                            {{ value }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                                <button type="submit" class="btn btn-sm btn-success">
+                                    Update
+                                </button>
+                            </form>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            {% empty %}
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center py-5">
+                    <i class="fas fa-inbox fa-4x text-muted mb-3"></i>
+                    <h4 class="text-muted">No Applications Yet</h4>
+                    <p class="text-muted">
+                        Candidates will appear here once they apply for this job.
+                    </p>
+                </div>
+            </div>
+            {% endfor %}
+
+        </div>
+    </div>
+</div>
+
+<style>
+.avatar-circle {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+}
+</style>
+{% endblock %}
