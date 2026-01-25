@@ -85,16 +85,25 @@ from .models import Application
 
 @login_required
 def update_application_status(request, app_id):
-    # Only allow POST requests
     if request.method != "POST":
         messages.error(request, "Invalid request method")
-        return redirect("recruiter:dashboard")
+        return redirect("/")
 
-    application = get_object_or_404(
-        Application,
-        id=app_id,
-        job__created_by=request.user  # 🔒 recruiter ownership check
-    )
+    # application = get_object_or_404(
+    #     Application,
+    #     id=app_id,
+    #     job__created_by=request.user
+    # )
+    try:
+        application = Application.objects.get(id=app_id)
+    except Application.DoesNotExist:
+        messages.error(request, "Application not found.")
+        return redirect("recruiter_dashboard")
+
+    if application.job.created_by != request.user:
+        messages.error(request, "You are not allowed to update this application.")
+        return redirect("recruiter_dashboard")
+
 
     status = request.POST.get("status")
 
@@ -108,18 +117,16 @@ def update_application_status(request, app_id):
     application.status = status
     application.save()
 
-    # 📧 SEND EMAIL WHEN SHORTLISTED
     if status == "SHORTLISTED":
         send_mail(
             subject="You are shortlisted 🎉",
             message=(
                 f"Congratulations!\n\n"
-                f"You have been shortlisted for the role:\n"
-                f"{application.job.title}\n\n"
-                f"Our team will contact you soon."
+                f"You have been shortlisted for:\n"
+                f"{application.job.title}"
             ),
             from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[application.applicant.email],  # ✅ applicant (NOT candidate)
+            recipient_list=[application.candidate.email],
             fail_silently=True,
         )
 

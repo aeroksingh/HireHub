@@ -4,32 +4,47 @@
 <h2>Applicants for {{ job.title }}</h2>
 
 {% if applications %}
-    <table border="1" cellpadding="10">
-        <tr>
-            <th>Candidate</th>
-            <th>Email</th>
-            <th>Status</th>
-            <th>Action</th>
-        </tr>
+<table border="1" cellpadding="10">
+    <tr>
+        <th>Candidate</th>
+        <th>Email</th>
+        <th>Status</th>
+        <th>Action</th>
+    </tr>
 
-        {% for app in applications %}
-        <tr>
-            <td>{{ app.user.get_full_name|default:app.user.email }}</td>
-            <td>{{ app.user.email }}</td>
-            <td>{{ app.status }}</td>
-            <td>
-                {% if app.status == "APPLIED" %}
-                    <a href="/application/{{ app.id }}/SHORTLISTED/">Shortlist</a> |
-                    <a href="/application/{{ app.id }}/REJECTED/">Reject</a>
-                {% else %}
-                    —
-                {% endif %}
-            </td>
-        </tr>
-        {% endfor %}
-    </table>
+    {% for application in applications %}
+    <tr>
+        <td>
+            {{ application.candidate.get_full_name|default:application.candidate.email }}
+        </td>
+        <td>{{ application.candidate.email }}</td>
+        <td>{{ application.get_status_display }}</td>
+        <td>
+            {% if application.status == "APPLIED" %}
+            <form method="POST"
+                  action="{% url 'update_application_status' application.id %}"
+                  style="display:inline;">
+                {% csrf_token %}
+                <input type="hidden" name="status" value="SHORTLISTED">
+                <button type="submit">Shortlist</button>
+            </form>
+
+            <form method="POST"
+                  action="{% url 'update_application_status' application.id %}"
+                  style="display:inline;">
+                {% csrf_token %}
+                <input type="hidden" name="status" value="REJECTED">
+                <button type="submit">Reject</button>
+            </form>
+            {% else %}
+                —
+            {% endif %}
+        </td>
+    </tr>
+    {% endfor %}
+</table>
 {% else %}
-    <p>No applicants yet.</p>
+<p>No applicants yet.</p>
 {% endif %}
 
 {% endblock %}
