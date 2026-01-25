@@ -7,6 +7,8 @@ Production-ready settings for Render deployment.
 from pathlib import Path
 import os
 import dj_database_url
+from pathlib import Path
+from decouple import config
 
 # --------------------------------------------------
 # BASE DIR
@@ -62,7 +64,6 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
-
 
 # --------------------------------------------------
 # URLS / TEMPLATES
